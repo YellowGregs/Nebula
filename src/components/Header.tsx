@@ -6,7 +6,7 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-          <img src="/src/components/assets/Nebula.png" alt="Nebula" className="w-12 h-12" />
+          <img src="./assets/Nebula.png" alt="Nebula" className="w-12 h-12" />
             <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Nebula
             </span>
