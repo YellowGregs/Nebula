@@ -6,7 +6,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-gray-400 text-sm">
-            © 2024 Nebula. All rights reserved.
+            © 2025 Nebula. All rights reserved.
           </div>
           <a
             href="https://discord.gg/YCVzXaAtxt"
