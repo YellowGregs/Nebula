@@ -5,7 +5,7 @@ export function Hero() {
   return (
     <section className="min-h-screen flex items-center justify-center text-center pt-20 pb-32">
       <div className="max-w-4xl mx-auto px-4">
-      <img src="/src/components/assets/Nebula.png" alt="Nebula" className="w-49 h-48 mx-auto mb-8" />
+      <img src="https://files.catbox.moe/gl077v.png" alt="Nebula" className="w-49 h-48 mx-auto mb-8" />
         <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Nebula
         </h1>
