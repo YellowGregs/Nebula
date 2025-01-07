@@ -33,12 +33,12 @@ export function Hero() {
       setWarningVisible(true);
       const timeout = setTimeout(() => {
         setFadeOut(true);
-      }, 3000);
+      }, 0);
 
       setTimeout(() => {
         setWarningVisible(false);
         setFadeOut(false);
-      }, 3500);
+      }, 0);
 
       return () => clearTimeout(timeout);
     }
