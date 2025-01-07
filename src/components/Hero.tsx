@@ -1,7 +1,7 @@
 import { Download } from 'lucide-react';
 import { Button } from './Button';
 import { useState, useEffect } from 'react';
-// ok some of things i coded here are trash :cry:
+
 export function Hero() {
   const [apkLinks, setApkLinks] = useState<{ [key: string]: string }>({});
   const [version, setVersion] = useState('');
@@ -16,14 +16,11 @@ export function Hero() {
       try {
         const main = await fetch('https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Nebula/JSON.json');
         const data = await main.json();
-
-        // console.log('Fetched:', data);
-
         setApkLinks(data.ApkLink);
         setVersion(data.versionName);
-        setLoading(false);
       } catch (error) {
         console.error('Failed to fetch JSON:', error);
+      } finally {
         setLoading(false);
       }
     };
@@ -32,7 +29,7 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    if (!apkLinks || Object.keys(apkLinks).length === 0) {
+    if (Object.keys(apkLinks).length === 0) {
       setWarningVisible(true);
       const timeout = setTimeout(() => {
         setFadeOut(true);
@@ -48,8 +45,7 @@ export function Hero() {
   }, [apkLinks]);
 
   const handleDownload = () => {
-    if (!apkLinks || !apkLinks[arch]) return;
-
+    if (!apkLinks[arch]) return;
     const link = apkLinks[arch];
     window.open(link, '_blank');
   };
@@ -57,7 +53,7 @@ export function Hero() {
   return (
     <section className="min-h-screen flex items-center justify-center text-center pt-20 pb-32">
       <div className="max-w-4xl mx-auto px-4">
-      <img src="https://files.catbox.moe/gl077v.png" alt="Nebula" className="w-49 h-48 mx-auto mb-8" />
+        <img src="https://files.catbox.moe/gl077v.png" alt="Nebula" className="w-49 h-48 mx-auto mb-8" />
         <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
           Nebula - v{version}
         </h1>
@@ -87,18 +83,17 @@ export function Hero() {
         <Button
           onClick={handleDownload}
           className="group"
-          // disabled={!apkLinks}
+          disabled={!apkLinks[arch]}
         >
           <Download className="w-5 h-5 transition-transform duration-300 group-hover:scale-100" />
           Download
         </Button>
 
-
         {warningVisible && (
           <div
             className={`mt-4 text-red-500 font-semibold transition-opacity duration-1000 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
           >
-{/*             Nebula isn't released. */}
+            {/* Nebula isn't released. */}
           </div>
         )}
       </div>
