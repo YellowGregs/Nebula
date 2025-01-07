@@ -87,7 +87,7 @@ export function Hero() {
         <Button
           onClick={handleDownload}
           className="group"
-          disabled={!apkLinks[arch] || loading}
+{/*           disabled={!apkLinks[arch] || loading} */}
         >
           <Download className="w-5 h-5 transition-transform duration-300 group-hover:scale-100" />
           Download
@@ -98,7 +98,7 @@ export function Hero() {
           <div
             className={`mt-4 text-red-500 font-semibold transition-opacity duration-1000 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
           >
-            Nebula isn't released.
+{/*             Nebula isn't released. */}
           </div>
         )}
       </div>
