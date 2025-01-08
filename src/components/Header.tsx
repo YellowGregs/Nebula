@@ -13,7 +13,7 @@ export function Header() {
           </div>
 
           <a
-            href="https://discord.gg/getnebula"
+            href="https://discord.gg/YCVzXaAtxt"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-2 text-gray-400 hover:text-white transition-all duration-300"
