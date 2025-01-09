@@ -30,7 +30,11 @@ const Hero = () => {
   const handleDownload = () => {
     if (!apkLinks[architecture]) return;
     const link = apkLinks[architecture];
-    window.open(link, '_blank');
+    const a = document.createElement('a');
+    a.href = link;
+    a.download = 'Nebula.apk';
+    a.target = '_blank';
+    a.click();
   };
 
   return (
