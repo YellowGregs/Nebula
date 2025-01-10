@@ -97,7 +97,7 @@ const Hero = () => {
                     }}
                     className="block w-full text-left px-4 py-2 hover:bg-white/5 rounded-b-lg"
                   >
-                    32-bit
+                    32-bit (W.I.P)
                   </button>
                 </div>
               )}
