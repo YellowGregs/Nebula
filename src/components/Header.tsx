@@ -20,7 +20,7 @@ const Header = () => {
               <FaDiscord className="w-6 h-6" />
             </a>
             
-            <a
+{/*             <a
               href="https://docsnebula.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
@@ -28,7 +28,7 @@ const Header = () => {
               title="Documentation"
             >
               <FaBook className="w-5 h-5" />
-            </a>
+            </a> */}
           </div>
         </div>
       </div>
