@@ -12,7 +12,9 @@ const Hero = () => {
     const fetchJsonData = async () => {
       setLoading(true);
       try {
-        const main = await fetch('https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Nebula/JSON.json');
+        // Main: https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Nebula/JSON.json
+        // Test: https://raw.githubusercontent.com/YellowGregs/Test/refs/heads/main/Nebula.json
+        const main = await fetch('https://raw.githubusercontent.com/YellowGregs/Test/refs/heads/main/Nebula.json');
         const data = await main.json();
         
         setApkLinks(data.ApkLink);  
