@@ -11,7 +11,7 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-5">
             <a
-              href="https://discord.gg/YCVzXaAtxt"
+              href="https://discord.gg/EvVT3xEw84"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/70 hover:text-white transition-colors"
