@@ -1,10 +1,7 @@
 # Nebula
-Roblox Executor
+A Roblox Executor Website built with Vite, React, and TypeScript.
 
----
-## Contributor
-- `YellowGreg` - Finish up the website & host it
-- `Wspboy12` - Designer of the website
-- `ShadowClark` - help fix some bugs & issues in the website
-
-Vite + React + TS
+## Contributors
+- **`YellowGreg`** - Finished the website and hosted it.
+- **`Wspboy12`** - Designer of the website.
+- **`ShadowClark`** - Helped fix bugs and address issues in the website.
