@@ -1,0 +1,254 @@
+import { useState } from 'react';
+import { Copy, CheckCircle, AlertCircle, RefreshCw, Gamepad2, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const supportedGames = [
+  "Blox Fruit", "Muscle Legends", "Pet simulator 99", "Gym League",
+  "The Strongest Battlegrounds", "Doors", "Anime Vanguards", "Pet GO",
+  "Fisch", "Anime Reborn", "Jujutse Infinite"
+];
+
+const otherScripts = [
+  {
+    name: "Gym League",
+    description: "...",
+    status: "working",
+    image: "https://tr.rbxcdn.com/180DAY-a40f7faa64637f9095fb494e6a4ff8ae/768/432/Image/Webp/noFilter",
+    code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Gym%20League.lua"))()'
+  },
+  {
+    name: "Doors",
+    description: "...",
+    status: "working",
+    image: "https://tr.rbxcdn.com/180DAY-5e188aea3dcc3d95e140491717b70e16/768/432/Image/Webp/noFilter",
+    code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Doors.lua"))()'
+  },
+  {
+    name: "Anime Vanguards",
+    description: "...",
+    status: "working",
+    image: "https://tr.rbxcdn.com/180DAY-70b0f3b5700568966e80a553f5702de2/768/432/Image/Webp/noFilter",
+    code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Anime%20Vanguards.lua"))()'
+  },
+  {
+    name: "Anime Reborn",
+    description: "...",
+    status: "working",
+    image: "https://tr.rbxcdn.com/180DAY-e9c0c21f136cabea70d8bd7a6ff5002d/768/432/Image/Webp/noFilter",
+    code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/main/Anime%20Reborn.lua"))()'
+  },
+  {
+    name: "Jujutsu Infinite",
+    description: "...",
+    status: "working",
+    image: "https://tr.rbxcdn.com/180DAY-a83ef15b1c5c0011154ce30e56bb4818/768/432/Image/Webp/noFilter",
+    code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Jujutsu%20Infinite.lua"))()'
+  }
+];
+
+type ScriptStatus = 'working' | 'updating' | 'not_working';
+
+const StatusBadge = ({ status }: { status: ScriptStatus }) => {
+  const badges: Record<ScriptStatus, { icon: React.ComponentType<{ className?: string }>; text: string; className: string }> = {
+    working: {
+      icon: CheckCircle,
+      text: "Working",
+      className: "text-green-400 bg-green-500/10",
+    },
+    updating: {
+      icon: RefreshCw,
+      text: "Updating",
+      className: "text-yellow-400 bg-yellow-500/10",
+    },
+    not_working: {
+      icon: AlertCircle,
+      text: "Not Working",
+      className: "text-red-400 bg-red-500/10",
+    },
+  };
+
+  const { icon: Icon, text, className } = badges[status];
+
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm ${className}`}>
+      <Icon className="w-4 h-4 mr-1" />
+      {text}
+    </span>
+  );
+};
+
+type FeatureCardProps = {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+};
+
+const FeatureCard = ({ icon: Icon, title, description }: FeatureCardProps) => (
+  <div className="bg-blue-500/5 backdrop-blur-xl rounded-lg p-6 border border-blue-500/10">
+    <Icon className="w-6 h-6 text-blue-400 mb-4" />
+    <h3 className="text-white font-semibold mb-2">{title}</h3>
+    <p className="text-white/60 text-sm">{description}</p>
+  </div>
+);
+
+export default function Scripts() {
+  const [copiedScriptId, setCopiedScriptId] = useState<string | null>(null);
+
+  const copyToClipboard = (code: string, scriptId: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedScriptId(scriptId);
+    setTimeout(() => setCopiedScriptId(null), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-[500px] h-[500px] -top-250 -right-100 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute w-[500px] h-[500px] -bottom-250 -left-100 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute w-[300px] h-[300px] top-1/4 right-1/4 bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute w-[400px] h-[400px] bottom-1/3 left-1/3 bg-blue-500/5 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="relative pt-32 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <h1 className="text-4xl font-bold text-white mb-4 text-center">Speed Hub X</h1>
+            <p className="text-blue-400 text-center mb-12">One script to Improve your bad experience.</p>
+
+            <div className="max-w-4xl mx-auto mb-24">
+              <div className="group bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-lg overflow-hidden transition-all duration-300 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+                <div className="relative h-64 bg-black">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-black to-black"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <StatusBadge status="working" />
+                  </div>
+                </div>
+
+                <div className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <FeatureCard
+                      icon={Zap}
+                      title="High Performance"
+                      description="Optimized code for smooth experience"
+                    />
+                    <FeatureCard
+                      icon={Gamepad2}
+                      title="Multi-Game Support"
+                      description="Works across various games"
+                    />
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-white mb-4">Speed Hub X</h2>
+                  <p className="text-blue-400 mb-6">The script that works across multiple popular games</p>
+
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                      <Gamepad2 className="w-5 h-5 mr-2 text-blue-400" />
+                      Supported Games
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                      {supportedGames.map((game, index) => (
+                        <motion.div
+                          key={index}
+                          whileHover={{ scale: 1.02 }}
+                          className="px-3 py-2 bg-blue-500/5 rounded-lg text-white/80 hover:text-blue-400 transition-colors duration-200"
+                        >
+                          {game}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <pre className="bg-black/50 rounded-lg p-4 pr-24 text-blue-300 text-sm overflow-x-auto custom-scrollbar border border-blue-500/10">
+                      loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
+                    </pre>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => copyToClipboard('loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()', 'universal')}
+                      className="absolute top-2 right-2 px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] flex items-center space-x-2"
+                    >
+                      {copiedScriptId === 'universal' ? (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Other Scripts */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-16"
+          >
+            <h2 className="text-3xl font-bold text-white mb-4 text-center">Other Scripts</h2>
+            <p className="text-blue-400 text-center mb-12">Other Scripts.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {otherScripts.map((script, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ y: -5 }}
+                  className="bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-lg overflow-hidden flex flex-col"
+                >
+                  {/* Image section */}
+                  <div className="relative h-48 bg-black">
+                    <img
+                      src={script.image}
+                      alt={script.name}
+                      className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <StatusBadge status={script.status as ScriptStatus} />
+                    </div>
+                  </div>
+
+                  <div className="p-6 flex-grow flex flex-col">
+                    <h3 className="text-xl font-semibold text-white mb-2">{script.name}</h3>
+                    <p className="text-white/60 mb-4">{script.description}</p>
+                    <div className="relative mt-auto">
+                      <pre className="bg-black/50 rounded-lg p-4 text-blue-300 text-sm overflow-x-auto custom-scrollbar border border-blue-500/10 mb-12">
+                        {script.code}
+                      </pre>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => copyToClipboard(script.code, `script-${index}`)}
+                        className="absolute bottom-2 right-2 px-4 py-1.5 text-sm bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/20 hover:bg-blue-600/30 transition-all duration-200 flex items-center space-x-2"
+                      >
+                        {copiedScriptId === `script-${index}` ? (
+                          <>
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
