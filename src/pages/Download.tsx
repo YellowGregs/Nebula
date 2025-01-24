@@ -16,7 +16,7 @@ const VersionSelect = ({ selectedVersion, onChange }: { selectedVersion: string;
     <select
       id="version-select"
       aria-label="Select version"
-      className="appearance-none bg-blue-500/10 text-white border border-blue-500/20 rounded-lg pl-4 pr-10 py-2 hover:bg-blue-500/20 transition-colors cursor-pointer focus:outline-none focus:border-blue-500/40"
+      className="appearance-none bg-blue-500/10 text-white border border-blue-500/20 rounded-lg pl-4 pr-10 py-2 hover:bg-blue-500/20 transition-colors cursor-pointer focus:outline-none focus:border-blue-500/40 w-full xs:w-[150px] sm:w-[180px] md:w-[140px] lg:w-[150px]"
       value={selectedVersion}
       onChange={onChange}
     >
