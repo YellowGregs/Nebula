@@ -6,6 +6,12 @@ import Home from './pages/Home';
 import Scripts from './pages/Scripts';
 import Download from './pages/Download';
 
+const NotFound = () => (
+  <div>
+    <h1>404 - Page Not Found</h1>
+  </div>
+);
+
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -22,6 +28,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/scripts" element={<Scripts />} />
           <Route path="/download" element={<Download />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
