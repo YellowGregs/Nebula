@@ -1,4 +1,4 @@
-import { Download, Book, Shield, Sparkles, Key } from 'lucide-react';
+import { Download, Book, Shield, Sparkles, Key, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -100,6 +100,19 @@ export default function Home() {
                   </Link>
                 </motion.div>
 
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
+                  <a
+                    href="https://youtu.be/_DICj4Ut8B8?feature=shared" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all duration-300 backdrop-blur-lg border border-red-500/50"
+                  >
+                    <Youtube className="w-5 h-5 mr-2" />
+                    <span className="relative">Tutorial</span>
+                  </a>
+                </motion.div>
+
+
                 {/* <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.95 }}>
                   <a
                     href="#"
@@ -111,6 +124,17 @@ export default function Home() {
                     View Documentation
                   </a>
                 </motion.div> */}
+                
+                {/* <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to="/documentation"
+                    className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-3 rounded-lg bg-blue-500/10 text-blue-400 transition-all duration-300 hover:bg-blue-500/20 backdrop-blur-lg border border-blue-500/20"
+                  >
+                    <Book className="relative w-5 h-5 mr-2" />
+                    <span className="relative">Documentation</span>
+                  </Link>
+                </motion.div> */}
+
               </div>
             </motion.div>
           </div>
