@@ -146,6 +146,13 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
       discordLink: "https://discord.gg/reaperhub",
       script: 'loadstring(game:HttpGet("https://reaperscripts.com/loader.lua"))()',
       image: "https://files.catbox.moe/gl077v.png"
+    },
+    {
+      name: "Lunor Hub",
+      description: "Lunor.",
+      discordLink: "https://discord.gg/lunor",
+      script: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Just3itx/Lunor-Loadstrings/refs/heads/main/Loader"))()',
+      image: "https://files.catbox.moe/gl077v.png"
     }
   ], []);
 
