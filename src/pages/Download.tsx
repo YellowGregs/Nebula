@@ -57,7 +57,17 @@ export default function DownloadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-black relative overflow-hidden pt-20 pb-12">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-[500px] h-[500px] -top-250 -right-100 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute w-[500px] h-[500px] -bottom-250 -left-100 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute w-[300px] h-[300px] top-1/4 right-1/4 bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute w-[400px] h-[400px] bottom-1/3 left-1/3 bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400/40 rounded-full" />
+        <div className="absolute top-3/4 right-1/4 w-2 h-2 bg-blue-400/40 rounded-full" />
+        <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-blue-400/30 rounded-full" />
+        <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-blue-400/30 rounded-full" />
+      </div>
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
