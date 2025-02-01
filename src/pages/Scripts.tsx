@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Copy, CheckCircle, RefreshCw, Search, ExternalLink, Key, ChevronRight, ChevronLeft } from 'lucide-react';
-// AlertCircle,  Gamepad2, Zap
+// Use later: AlertCircle,  Gamepad2, Zap
 import { motion } from 'framer-motion';
 import { FaDiscord, FaLightbulb, FaSearch } from 'react-icons/fa';
 import axios from 'axios';
@@ -36,14 +36,14 @@ const Scripts = () => {
   }
 
   const [SResults, setSResults] = useState<Script[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1);
+  const [isLoading, sil] = useState(false);
+  const [error, se] = useState<string | null>(null);
+  const [totalPages, stp] = useState(0);
+  const [page, sp] = useState(1);
 
   const Search_Scripts = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    sil(true);
+    se(null);
     try {
       // https://scriptblox.com/api/script/search   ?q=aimbot&mode=free&page=1
       // https://scriptblox-api-proxy.vercel.app/api/search       ?q=aimbot&mode=free&page=1
@@ -57,17 +57,17 @@ const Scripts = () => {
 
       if (response.data && response.data.result) {
         setSResults(response.data.result.scripts);
-        setTotalPages(response.data.result.totalPages);
+        stp(response.data.result.totalPages);
       } else {
         setSResults([]);
-        setError('Invalid response format from server');
-        setTotalPages(0);
+        se('Invalid response format from server');
+        stp(0);
       }
     } catch (err) {
-      setError('Failed to fetch scripts. Please try again later.');
+      se('Failed to fetch scripts. Please try again later.');
       console.error('Error fetching scripts:', err);
     } finally {
-      setIsLoading(false);
+      sil(false);
     }
   }, [SearchQ, mode, page]);
 
@@ -95,34 +95,34 @@ const Scripts = () => {
 
   const Search_Change = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQ(e.target.value);
-    setPage(1);
+    sp(1);
   };
 
   const Mode_Change = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMode(e.target.value as "free" | "paid");
-    setPage(1);
+    sp(1);
   };
 
   const PrevP = () => {
     if (page > 1) {
-      setPage(page - 1);
+      sp(page - 1);
     }
   };
 
   const NextP = () => {
     if (page < totalPages) {
-      setPage(page + 1);
+      sp(page + 1);
     }
   };
 
 
-  const recommendedHubs = useMemo(() => [
+  const recommendH = useMemo(() => [
     {
       name: "Speed Hub X",
       description: "One script to improve your gaming experience.",
       discordLink: "https://discord.gg/speedhubx",
       script: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()',
-      image: "https://files.catbox.moe/gl077v.png"
+      image: "https://files.catbox.moe/o6m1bl.png"
     },
     {
       name: "Hoho Hub",
@@ -156,21 +156,21 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
     }
   ], []);
 
-  {SResults.map((script) => {
-          if (script.game?.imageUrl && !script.game.imageUrl.startsWith("http")) {
-            script.game.imageUrl = `https://scriptblox.com${script.game.imageUrl}`;
-          }
-        })}
+  // {SResults.map((script) => {
+  //         if (script.game?.imageUrl && !script.game.imageUrl.startsWith("http")) {
+  //           script.game.imageUrl = `https://scriptblox.com${script.game.imageUrl}`;
+  //         }
+  // })}
 
   const [lineCount, setLineCount] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     const counts: { [key: string]: number } = {};
-    recommendedHubs.forEach((hub, index) => {
+    recommendH.forEach((hub, index) => {
       counts[`hub-${index}`] = hub.script.split("\n").length;
     });
     setLineCount(counts);
-  }, [recommendedHubs]);
+  }, [recommendH]);
 
   // code is so fucking ugly god but it works
   return (
@@ -209,7 +209,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
 
         {activeTab === 'recommendations' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {recommendedHubs.map((hub, index) => (
+            {recommendH.map((hub, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -235,15 +235,15 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                       {hub.script}
                     </pre>
                     <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => CopyTC(hub.script, `hub-${index}`)}
-        className="absolute right-2 px-4 py-1.5 text-sm bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/20 hover:bg-blue-600/30 transition-all duration-200 flex items-center space-x-2"
-        style={{
-          top: `${55 + (lineCount[`hub-${index}`] || 0) * 22}px`,
-        }}
-      >
-        {CopiedSID === `hub-${index}` ? (
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => CopyTC(hub.script, `hub-${index}`)}
+                    className="absolute right-2 px-4 py-1.5 text-sm bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/20 hover:bg-blue-600/30 transition-all duration-200 flex items-center space-x-2"
+                    style={{
+                      top: `${55 + (lineCount[`hub-${index}`] || 0) * 22}px`,
+                    }}
+                    >
+                    {CopiedSID === `hub-${index}` ? (
           <>
             <CheckCircle className="w-4 h-4" />
             <span>Copied!</span>
@@ -326,8 +326,8 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                       {/* Script details */}
 
                       <div className="w-full h-40 relative mb-4">
-                {script.game ? (
-                  <a href={`https://www.roblox.com/games/${script.game.gameId}`} target="_blank" rel="noopener noreferrer">
+                        {script.game ? (
+                          <a href={`https://www.roblox.com/games/${script.game.gameId}`} target="_blank" rel="noopener noreferrer">
                     <img
                       src={script.game.imageUrl}
                       alt={script.game.name || "Game Image"}
@@ -346,7 +346,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                   />
                 )}
               </div>
-
 
                       <div className="flex items-start justify-between mb-4">
                         <div>
