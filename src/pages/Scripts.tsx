@@ -179,7 +179,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
     setLineCount(counts);
   }, [recommendH]);
 
-  // code is so fucking ugly god but it works
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
     <div className="absolute inset-0 overflow-hidden">
