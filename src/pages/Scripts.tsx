@@ -439,6 +439,9 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                   >
                     <ChevronLeft className="w-5 h-5 inline" /> Prev
                   </button>
+                  <span className="text-zinc-400 bg-zinc-900/50 px-4 py-2 rounded-lg border border-zinc-800/50">
+                  Page {page} of {totalPages}
+                  </span>
                   <button
                     disabled={page === totalPages}
                     onClick={NextP}
