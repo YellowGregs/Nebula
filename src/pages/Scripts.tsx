@@ -159,7 +159,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
       description: "Alchemy.",
       discordLink: "https://discord.gg/alchemyhub",
       script: 'loadstring(game:HttpGet("https://scripts.alchemyhub.xyz"))()',
-      image: "https://files.catbox.moe/gl077v.png"
+      image: "https://files.catbox.moe/topblv.webp"
     }
   ], []);
 
