@@ -153,6 +153,13 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
       discordLink: "https://discord.gg/lunor",
       script: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Just3itx/Lunor-Loadstrings/refs/heads/main/Loader"))()',
       image: "https://files.catbox.moe/gl077v.png"
+    },
+    {
+      name: "Alchemy hub",
+      description: "Alchemy.",
+      discordLink: "https://discord.gg/alchemyhub",
+      script: 'loadstring(game:HttpGet("https://scripts.alchemyhub.xyz"))()',
+      image: "https://files.catbox.moe/gl077v.png"
     }
   ], []);
 
