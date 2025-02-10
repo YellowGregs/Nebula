@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Home, Code2, Menu, X, Download } from 'lucide-react';
 import { FaDiscord } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-// ugly but who cares
+import { motion, AnimatePresence } from 'framer-motion';
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -39,13 +39,58 @@ export default function Navbar() {
     { path: '/download', icon: Download, label: 'Download' }
   ];
 
+  const menuVariants = {
+    closed: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    },
+    open: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const navbarVariants = {
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    },
+    hidden: {
+      y: -100,
+      opacity: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeIn"
+      }
+    }
+  };
+
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
+      initial="hidden"
+      animate="visible"
+      variants={navbarVariants}
       className="fixed top-0 w-full z-50 px-4 py-2"
     >
-      <div className={`max-w-7xl mx-auto rounded-2xl transition-all duration-300 ${scrolled ? 'bg-black/70 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-blue-500/20' : 'bg-transparent backdrop-blur-sm'}`}>
+      <motion.div
+        className={`max-w-7xl mx-auto rounded-2xl transition-all duration-500 ${
+          scrolled 
+            ? 'bg-black/80 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-blue-500/20' 
+            : 'bg-transparent backdrop-blur-sm'
+        }`}
+      >
         <div className="flex items-center justify-between h-16 px-4">
           <Link to="/" className="group flex items-center space-x-3">
             <motion.div
@@ -68,14 +113,17 @@ export default function Navbar() {
                 to={path}
                 className="relative group px-3"
               >
-                <div className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 ${
-                  isActive(path)
-                    ? 'text-blue-400 bg-blue-500/10'
-                    : 'text-white/60 hover:text-blue-400 group-hover:bg-blue-500/5'
-                }`}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 ${
+                    isActive(path)
+                      ? 'text-blue-400 bg-blue-500/10'
+                      : 'text-white/60 hover:text-blue-400 group-hover:bg-blue-500/5'
+                  }`}
+                >
                   <Icon className="w-4 h-4" />
                   <span>{label}</span>
-                </div>
+                </motion.div>
               </Link>
             ))}
 
@@ -96,66 +144,76 @@ export default function Navbar() {
             )}
           </div>
           
-          <button 
+          <motion.button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             className="md:hidden p-2 rounded-lg hover:bg-blue-500/5 transition-colors duration-200"
           >
-            <motion.div
-              initial={false}
-              animate={{ rotate: isMenuOpen ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isMenuOpen ? (
-                <X className="w-6 h-6 text-white" />
-              ) : (
-                <Menu className="w-6 h-6 text-white" />
-              )}
-            </motion.div>
-          </button>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={isMenuOpen ? "close" : "menu"}
+                initial={{ rotate: 0 }}
+                animate={{ rotate: isMenuOpen ? 90 : 0 }}
+                exit={{ rotate: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isMenuOpen ? (
+                  <X className="w-6 h-6 text-white" />
+                ) : (
+                  <Menu className="w-6 h-6 text-white" />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </motion.button>
         </div>
       
-        {/* Mobile menu */}
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: isMenuOpen ? 1 : 0, height: isMenuOpen ? "auto" : 0 }}
-          transition={{ duration: 0.2 }}
-          className="md:hidden overflow-hidden rounded-b-2xl"
-        >
-          <div className={`${scrolled ? 'bg-black/90' : 'bg-transparent'} backdrop-blur-sm`}>
-            <div className="px-4 py-3 space-y-1">
-              {navLinks.map(({ path, label, icon: Icon }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${
-                    isActive(path)
-                      ? 'text-blue-400 bg-blue-500/10'
-                      : 'text-white/60 hover:text-blue-400 hover:bg-blue-500/5'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{label}</span>
-                </Link>
-              ))}
-              
-              <div className="flex items-center space-x-2 px-3 py-4 border-t border-blue-500/10">
-                {discordInvite && (
-                  <a
-                    href={discordInvite}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-white/60 hover:text-blue-400 transition-colors"
-                    title="Join our Discord"
-                  >
-                    <FaDiscord className="w-5 h-5" />
-                  </a>
-                )}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              variants={menuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              className="md:hidden overflow-hidden"
+            >
+              <div className="bg-black/95 backdrop-blur-lg rounded-b-2xl border-t border-blue-500/20">
+                <div className="px-4 py-3 space-y-1">
+                  {navLinks.map(({ path, label, icon: Icon }) => (
+                    <Link
+                      key={path}
+                      to={path}
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-300 ${
+                        isActive(path)
+                          ? 'text-blue-400 bg-blue-500/10'
+                          : 'text-white/60 hover:text-blue-400 hover:bg-blue-500/5'
+                      }`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{label}</span>
+                    </Link>
+                  ))}
+                  
+                  <div className="flex items-center space-x-2 px-3 py-4 border-t border-blue-500/10">
+                    {discordInvite && (
+                      <a
+                        href={discordInvite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-white/60 hover:text-blue-400 transition-colors"
+                        title="Join our Discord"
+                      >
+                        <FaDiscord className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </motion.nav>
   );
 }
