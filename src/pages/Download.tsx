@@ -157,7 +157,7 @@ export default function DownloadPage() {
                 {
                   name: 'Windows',
                   icon: Monitor,
-                  description: 'Windows version coming soon',
+                  description: 'Windows version is In Development',
                   buttonText: 'Coming Soon'
                 },
                 {
