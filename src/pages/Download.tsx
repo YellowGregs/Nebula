@@ -163,8 +163,8 @@ export default function DownloadPage() {
                 {
                   name: 'iOS',
                   icon: Apple,
-                  description: 'iOS version coming soon',
-                  buttonText: 'Coming Soon'
+                  description: 'iOS version Not in development',
+                  buttonText: 'Not Avaliable'
                 }
               ].map(({ name, icon: Icon, description, buttonText }, index) => (
                 <motion.div
