@@ -58,7 +58,6 @@ export default function DownloadPage() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
-      {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
@@ -215,9 +214,11 @@ export default function DownloadPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-semibold text-white">Windows</h2>
-                    <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-yellow-500/10 text-yellow-400">
+{/*                     <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-yellow-500/10 text-yellow-400"> */}
+{/*                       <AlertCircle className="w-4 h-4 mr-1" /> */}
+  <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-red-500/10 text-red-400">
                       <AlertCircle className="w-4 h-4 mr-1" />
-                      W.i.P
+                      N.I.D
                     </span>
                   </div>
                 </div>
@@ -226,7 +227,7 @@ export default function DownloadPage() {
                   <div className="flex items-start space-x-3">
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
-                      Windows version is currently in development.
+                      Windows version is not in development.
                     </p>
                   </div>
                 </div>
