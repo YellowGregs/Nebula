@@ -2,6 +2,7 @@ import { Download, Book, Shield, Sparkles, Key, Youtube, ChevronDown, Cpu, Zap, 
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
+import { CertifiedImage } from './CertifiedImage';
 
 interface JsonData {
   versionName: string;
@@ -71,7 +72,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Animated Background */}
+      <CertifiedImage width="140px" height="60px" />
+
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
@@ -201,7 +203,6 @@ export default function Home() {
                     <span className="relative">Documentation</span>
                     </Link>
                 </motion.div> */}
-
               </div>
             </motion.div>
           </div>
