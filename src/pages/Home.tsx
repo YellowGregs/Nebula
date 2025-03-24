@@ -72,7 +72,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      <CertifiedImage width="140px" height="60px" />
+      <CertifiedImage width="140px" height="60px" discordLink="https://discord.gg/z2mxCpDmuA" />
 
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
