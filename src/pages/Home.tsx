@@ -2,7 +2,7 @@ import { Download, Book, Shield, Sparkles, Key, Youtube, ChevronDown, Cpu, Zap, 
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { CertifiedImage } from './CertifiedImage';
+// import { CertifiedImage } from './CertifiedImage';
 
 interface JsonData {
   versionName: string;
@@ -72,7 +72,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      <CertifiedImage width="140px" height="60px" discordLink="https://discord.gg/z2mxCpDmuA" />
+      {/* <CertifiedImage width="140px" height="60px" /> */}
 
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -169,7 +169,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-6 px-4">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/download"
                     className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(37,99,235,0.5)] backdrop-blur-lg border border-blue-500/50"
