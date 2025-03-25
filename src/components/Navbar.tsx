@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaDiscord } from 'react-icons/fa';
-import { Menu, X, Home, Download, Code2 } from 'lucide-react';
+import { Menu, X, Home, Download, Code2, Key } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
 export default function Navbar() {
@@ -108,6 +108,9 @@ export default function Navbar() {
                 <NavLink to="/download" isActive={isActive('/download')} icon={Download}>
                   Download
                 </NavLink>
+                <NavLink to="/GetKey" isActive={isActive('/GetKey')} icon={Key}>
+                  Get Key
+                </NavLink>
               </div>
 
               <div className="h-6 w-px bg-blue-500/20 mx-2" />
@@ -176,6 +179,10 @@ export default function Navbar() {
                   <MobileNavLink to="/download" isActive={isActive('/download')} icon={Download} onClick={() => setIsMenuOpen(false)}>
                     Download
                   </MobileNavLink>
+                  <MobileNavLink to="/GetKey" isActive={isActive('/GetKey')} icon={Key} onClick={() => setIsMenuOpen(false)}>
+                    Get Key
+                  </MobileNavLink>
+                  
 
                   <motion.a
                     variants={{
