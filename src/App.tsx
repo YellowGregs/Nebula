@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Scripts from './pages/Scripts';
 import Download from './pages/Download';
+import GetKey from "./pages/GetKey";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -23,6 +24,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/scripts" element={<Scripts />} />
           <Route path="/download" element={<Download />} />
+          <Route path="/GetKey" element={<GetKey />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
