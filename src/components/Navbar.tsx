@@ -122,7 +122,7 @@ export default function Navbar() {
                   Download
                 </NavLink>
                 <NavLink to="/GetKey" isActive={isActive('/GetKey')} icon={Key}>
-                  Download
+                  Get Key
                 </NavLink>
               </div>
 
