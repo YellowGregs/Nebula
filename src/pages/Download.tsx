@@ -10,10 +10,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface ApkLinks {
-  [key: string]: string;
-}
-
 interface VngLinks {
   [key: string]: string;
 }
@@ -29,11 +25,13 @@ interface JsonData {
 const VersionSelect = ({
   selectedVersion,
   onChange,
-  isVNG
+  isVNG,
+  vngLinks
 }: {
   selectedVersion: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   isVNG: boolean;
+  vngLinks: VngLinks;
 }) => (
   <div className="relative inline-block">
     <select
@@ -48,16 +46,14 @@ const VersionSelect = ({
       {isVNG ? (
         <>
           <option value="vng-64">VNG 64‑bit</option>
-          <option value="vng-32" disabled>
+          <option value="vng-32" disabled={!vngLinks['32']}>
             VNG 32‑bit
           </option>
         </>
       ) : (
         <>
           <option value="64">64‑bit</option>
-          <option value="32" disabled>
-            32‑bit
-          </option>
+          <option value="32">32‑bit</option>
         </>
       )}
     </select>
@@ -93,37 +89,51 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  // 1) Detect Vietnam IP
+  // Improved VNG detection(hope this works :sob:)
   useEffect(() => {
-    fetch('https://ipwho.is/')
-      .then((res) => res.json())
-      .then((data: { country_code: string }) => {
-        const v = data.country_code === 'VN';
-        setIsVNG(v);
-        if (v) setSelectedVersion('vng-64');
-      })
-      .catch(() => {
-        setIsVNG(false);
-      });
+    const detect = async () => {
+      // primary
+      try {
+        const res1 = await fetch('https://ipwho.is/');
+        const d1 = await res1.json();
+        if (d1.country_code === 'VN' || d1.calling_code === '84') {
+          setIsVNG(true);
+          return;
+        }
+      } catch {
+        // Ignored
+      }
+      // fallback
+      try {
+        const res2 = await fetch('https://ipapi.co/json/');
+        const d2 = await res2.json();
+        if (d2.country === 'VN' || d2.country_calling_code === '+84') {
+          setIsVNG(true);
+          return;
+        }
+      } catch {
+        // Ignored
+      }
+      setIsVNG(false);
+    };
+    detect();
   }, []);
+
+  useEffect(() => {
+    if (isVNG) setSelectedVersion('vng-64');
+  }, [isVNG]);
 
   const handleDownload = () => {
     if (!jsonData) return;
-
     let link: string | undefined;
     if (selectedVersion.startsWith('vng-')) {
-      // "vng-64" → key "64"
       const bit = selectedVersion.split('-')[1];
       link = jsonData.ApkLink.vng[bit];
     } else {
       link = jsonData.ApkLink[selectedVersion as '32' | '64'];
     }
-
-    if (link) {
-      window.open(link, '_blank');
-    } else {
-      alert('Download link not available for this version.');
-    }
+    if (link) window.open(link, '_blank');
+    else alert('Download link not available for this version.');
   };
 
   if (isVNG === null) {
@@ -150,7 +160,6 @@ export default function DownloadPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,7 +175,6 @@ export default function DownloadPage() {
           <p className="text-blue-200 text-lg">Choose your platform and start executing</p>
         </motion.div>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -183,10 +191,19 @@ export default function DownloadPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-semibold text-white">Android</h2>
-                    <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-green-500/10 text-green-400">
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Working
-                    </span>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/10 text-green-400 border border-green-500/30">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Working
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          isVNG ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'
+                        }`}
+                      >
+                        {isVNG ? 'VNG Build' : 'Global Build'}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -195,8 +212,8 @@ export default function DownloadPage() {
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
                       {isVNG
-                        ? 'Select your VNG build.'
-                        : '32‑bit version is in development. Use 64‑bit if supported.'}
+                        ? 'Select your Roblox VNG APK.'
+                        : 'Select your Roblox Version APK.'}
                     </p>
                   </div>
                 </div>
@@ -211,11 +228,11 @@ export default function DownloadPage() {
                     <Download className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
                     Download
                   </motion.button>
-
                   <VersionSelect
                     selectedVersion={selectedVersion}
                     onChange={(e) => setSelectedVersion(e.target.value)}
                     isVNG={!!isVNG}
+                    vngLinks={jsonData?.ApkLink.vng || {}}
                   />
                 </div>
               </div>
