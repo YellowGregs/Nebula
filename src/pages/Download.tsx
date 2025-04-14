@@ -87,6 +87,21 @@ export default function DownloadPage() {
   const [isVNG, setIsVNG] = useState<boolean | null>(null);
   const [showModal, setShowModal] = useState(true);
 
+  // When component mounts, check localStorage for modal dismissal timestamp and selection.
+  useEffect(() => {
+    const lastSelectionTime = localStorage.getItem('nebulaModalLastSelection');
+    const storedIsVNG = localStorage.getItem('nebulaIsVNG');
+    if (lastSelectionTime && storedIsVNG !== null) {
+      const timeDiff = Date.now() - parseInt(lastSelectionTime);
+      if (timeDiff < 3600000) { // 1 hour in milliseconds
+        const isVietnam = storedIsVNG === 'true';
+        setIsVNG(isVietnam);
+        setSelectedVersion(isVietnam ? 'vng-64' : '64');
+        setShowModal(false);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     fetch(
       'https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Nebula/JSON.json'
@@ -96,10 +111,13 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
+  // Save selection and timestamp so modal won't show for an hour.
   const handleLocationSelect = (fromVietnam: boolean) => {
     setIsVNG(fromVietnam);
     setSelectedVersion(fromVietnam ? 'vng-64' : '64');
     setShowModal(false);
+    localStorage.setItem('nebulaModalLastSelection', Date.now().toString());
+    localStorage.setItem('nebulaIsVNG', fromVietnam.toString());
   };
 
   const handleDownload = () => {
@@ -120,6 +138,7 @@ export default function DownloadPage() {
     }
   };
 
+  // If isVNG is null and modal has been closed, don't display anything.
   if (isVNG === null && showModal === false) return null;
 
   return (
