@@ -6,9 +6,11 @@ import {
   Apple,
   Monitor,
   CheckCircle,
-  DownloadCloud
+  DownloadCloud,
+  AlertTriangle,
+  ChevronDown
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface VngLinks {
   [key: string]: string;
@@ -25,106 +27,136 @@ interface JsonData {
 const VersionSelect = ({
   selectedVersion,
   onChange,
-  isVNG,
-  vngLinks
+  versions,
 }: {
   selectedVersion: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  isVNG: boolean;
-  vngLinks: VngLinks;
-}) => (
-  <div className="relative inline-block">
-    <select
-      id="version-select"
-      aria-label="Select version"
-      className="appearance-none bg-blue-500/10 text-white border border-blue-500/20 
-                 rounded-xl pl-4 pr-10 py-2 hover:border-blue-500/30 transition-all duration-300 cursor-pointer focus:outline-none 
-                 focus:ring-2 focus:ring-blue-500/20 w-full"
-      value={selectedVersion}
-      onChange={onChange}
-    >
-      {isVNG ? (
-        <>
-          <option value="vng-64">VNG 64‑bit</option>
-          <option value="vng-32" disabled={!vngLinks['32']}>
-            VNG 32‑bit
-          </option>
-        </>
-      ) : (
-        <>
-          <option value="64">64‑bit</option>
-          <option value="32">32‑bit</option>
-        </>
-      )}
-    </select>
-    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-      <svg
-        className="w-4 h-4 text-blue-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
+  onChange: (version: string) => void;
+  versions: { label: string; value: string; disabled?: boolean }[];
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedLabel = versions.find(v => v.value === selectedVersion)?.label || '';
+
+  return (
+    <div className="relative">
+      <motion.button
+        id="version-select-button"
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-blue-500/10 text-white border border-blue-500/20 
+                 rounded-xl hover:border-blue-500/30 transition-all duration-300 focus:outline-none"
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
+        <span className="text-blue-200">{selectedLabel}</span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-5 h-5 text-blue-400" />
+        </motion.div>
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="fixed left-0 right-0 bottom-0 sm:absolute sm:bottom-auto sm:top-full z-[9999] w-full mt-2 bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-xl overflow-hidden shadow-xl"
+            style={{
+              maxHeight: '50vh',
+              overflowY: 'auto'
+            }}
+          >
+            <div className="p-2 space-y-1">
+              <div className="px-3 py-2 text-sm font-medium text-blue-400 border-b border-blue-500/20">Global Version</div>
+              {versions.filter(v => !v.value.startsWith('vng-')).map((version, index) => (
+                <motion.button
+                  key={version.value}
+                  whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                  onClick={() => {
+                    onChange(version.value);
+                    setIsOpen(false);
+                  }}
+                  disabled={version.disabled}
+                  className={`w-full px-3 py-2 text-left rounded-lg transition-colors duration-200 ${
+                    version.disabled 
+                      ? 'opacity-50 cursor-not-allowed text-blue-300'
+                      : 'text-blue-200 hover:text-white'
+                  }`}
+                >
+                  {version.label}
+                </motion.button>
+              ))}
+              
+              <div className="px-3 py-2 text-sm font-medium text-blue-400 border-b border-blue-500/20">VNG Version</div>
+              {versions.filter(v => v.value.startsWith('vng-')).map((version, index) => (
+                <motion.button
+                  key={version.value}
+                  whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                  onClick={() => {
+                    onChange(version.value);
+                    setIsOpen(false);
+                  }}
+                  disabled={version.disabled}
+                  className={`w-full px-3 py-2 text-left rounded-lg transition-colors duration-200 ${
+                    version.disabled 
+                      ? 'opacity-50 cursor-not-allowed text-blue-300'
+                      : 'text-blue-200 hover:text-white'
+                  }`}
+                >
+                  {version.label}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  </div>
-);
+  );
+};
 
 export default function DownloadPage() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState('64');
-  const [isVNG, setIsVNG] = useState<boolean | null>(null);
+  const [downloadAvailable, setDownloadAvailable] = useState(true);
 
   useEffect(() => {
     fetch(
       'https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Nebula/JSON.json'
     )
       .then((res) => res.json())
-      .then((data: JsonData) => setJsonData(data))
-      .catch((err) => console.error('Error fetching JSON:', err));
+      .then((data: JsonData) => {
+        setJsonData(data);
+        checkDownloadAvailability(data, selectedVersion);
+      })
+      .catch((err) => {
+        console.error('Error fetching JSON:', err);
+        setDownloadAvailable(false);
+      });
   }, []);
 
-  // Improved VNG detection(hope this works :sob:)
-  useEffect(() => {
-    const detect = async () => {
-      // primary
-      try {
-        const res1 = await fetch('https://ipwho.is/');
-        const d1 = await res1.json();
-        if (d1.country_code === 'VN' || d1.calling_code === '84') {
-          setIsVNG(true);
-          return;
-        }
-      } catch {
-        // Ignored
-      }
-      // fallback
-      try {
-        const res2 = await fetch('https://ipapi.co/json/');
-        const d2 = await res2.json();
-        if (d2.country === 'VN' || d2.country_calling_code === '+84') {
-          setIsVNG(true);
-          return;
-        }
-      } catch {
-        // Ignored
-      }
-      setIsVNG(false);
-    };
-    detect();
-  }, []);
+  const checkDownloadAvailability = (data: JsonData, version: string) => {
+    let link: string | undefined;
+    if (version.startsWith('vng-')) {
+      const bit = version.split('-')[1];
+      link = data.ApkLink.vng[bit];
+    } else {
+      link = data.ApkLink[version as '32' | '64'];
+    }
+    setDownloadAvailable(!!link);
+  };
 
-  useEffect(() => {
-    if (isVNG) setSelectedVersion('vng-64');
-  }, [isVNG]);
+  const handleVersionChange = (version: string) => {
+    setSelectedVersion(version);
+    if (jsonData) {
+      checkDownloadAvailability(jsonData, version);
+    }
+  };
 
   const handleDownload = () => {
-    if (!jsonData) return;
+    if (!jsonData || !downloadAvailable) return;
+    
     let link: string | undefined;
     if (selectedVersion.startsWith('vng-')) {
       const bit = selectedVersion.split('-')[1];
@@ -132,29 +164,44 @@ export default function DownloadPage() {
     } else {
       link = jsonData.ApkLink[selectedVersion as '32' | '64'];
     }
+    
     if (link) window.open(link, '_blank');
-    else alert('Download link not available for this version.');
   };
 
-  if (isVNG === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        Checking your location…
-      </div>
-    );
-  }
+  const isVngVersion = selectedVersion.startsWith('vng-');
+
+  const versions = [
+    { label: 'Global 64-bit', value: '64' },
+    { label: 'Global 32-bit', value: '32' },
+    { label: 'VNG 64-bit', value: 'vng-64' },
+    { label: 'VNG 32-bit', value: 'vng-32' }
+  ];
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.2, 0.1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
           className="absolute w-[800px] h-[800px] -top-400 -right-200 bg-blue-500/10 rounded-full blur-[180px]"
         />
         <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.1, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.2, 0.1, 0.2],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
           className="absolute w-[800px] h-[800px] -bottom-400 -left-200 bg-blue-500/10 rounded-full blur-[180px]"
         />
       </div>
@@ -176,65 +223,70 @@ export default function DownloadPage() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Android Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="group relative h-full"
+            className="group relative"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            <div className="relative h-full bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-hidden transition-all duration-300 group-hover:border-blue-500/40">
-              <div className="p-8 flex flex-col h-full">
+            <div className="relative bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-visible transition-all duration-300 group-hover:border-blue-500/40">
+              <div className="p-8">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="bg-blue-500/10 p-4 rounded-xl">
                     <Smartphone className="w-8 h-8 text-blue-400" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-semibold text-white">Android</h2>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/10 text-green-400 border border-green-500/30">
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Working
-                      </span>
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                          isVNG ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'
-                        }`}
-                      >
-                        {isVNG ? 'VNG Build' : 'Global Build'}
-                      </span>
-                    </div>
+                    <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-green-500/10 text-green-400">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Working
+                    </span>
                   </div>
                 </div>
 
-                <div className="bg-blue-500/5 rounded-xl p-4 mb-6 flex-grow">
+                {isVngVersion && (
+                  <div className="bg-yellow-500/10 rounded-xl p-4 mb-6">
+                    <div className="flex items-start space-x-3">
+                      <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-yellow-200 text-sm">
+                        Warning: Using VNG version outside Vietnam may result in your account being locked to the Vietnam region. Only use if you're in Vietnam or specifically need the VNG version.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-blue-500/5 rounded-xl p-4 mb-6">
                   <div className="flex items-start space-x-3">
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
-                      {isVNG
-                        ? 'Select your Roblox VNG APK.'
-                        : 'Select your Roblox Version APK.'}
+                      Select your preferred version. Use 64-bit if your device supports it.
                     </p>
                   </div>
                 </div>
 
-                {/* Download & Selector */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 mt-auto">
+                <div className="space-y-4">
+                  <VersionSelect
+                    selectedVersion={selectedVersion}
+                    onChange={handleVersionChange}
+                    versions={versions}
+                  />
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleDownload}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 group"
+                    disabled={!downloadAvailable}
+                    className={`w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      downloadAvailable
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg hover:shadow-blue-500/20'
+                        : 'bg-blue-500/10 text-blue-400 cursor-not-allowed'
+                    }`}
                   >
-                    <Download className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
-                    Download
+                    <Download className="w-5 h-5 mr-2" />
+                    {downloadAvailable ? 'Download' : 'Not Available'}
                   </motion.button>
-                  <VersionSelect
-                    selectedVersion={selectedVersion}
-                    onChange={(e) => setSelectedVersion(e.target.value)}
-                    isVNG={!!isVNG}
-                    vngLinks={jsonData?.ApkLink.vng || {}}
-                  />
                 </div>
               </div>
             </div>
@@ -245,11 +297,11 @@ export default function DownloadPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="group relative h-full"
+            className="group relative"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            <div className="relative h-full bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-hidden transition-all duration-300 group-hover:border-blue-500/40">
-              <div className="p-8 flex flex-col h-full">
+            <div className="relative bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-hidden transition-all duration-300 group-hover:border-blue-500/40">
+              <div className="p-8">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="bg-blue-500/10 p-4 rounded-xl">
                     <Apple className="w-8 h-8 text-blue-400" />
@@ -263,7 +315,7 @@ export default function DownloadPage() {
                   </div>
                 </div>
 
-                <div className="bg-blue-500/5 rounded-xl p-4 mb-6 flex-grow">
+                <div className="bg-blue-500/5 rounded-xl p-4 mb-6">
                   <div className="flex items-start space-x-3">
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
@@ -276,7 +328,7 @@ export default function DownloadPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled
-                  className="w-full py-3 px-6 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 transition-all duration-300 opacity-50 cursor-not-allowed mt-auto"
+                  className="w-full py-3 px-6 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 transition-all duration-300 opacity-50 cursor-not-allowed"
                 >
                   Not Available
                 </motion.button>
@@ -289,11 +341,11 @@ export default function DownloadPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="group relative h-full"
+            className="group relative"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            <div className="relative h-full bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-hidden transition-all duration-300 group-hover:border-blue-500/40">
-              <div className="p-8 flex flex-col h-full">
+            <div className="relative bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-2xl overflow-hidden transition-all duration-300 group-hover:border-blue-500/40">
+              <div className="p-8">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="bg-blue-500/10 p-4 rounded-xl">
                     <Monitor className="w-8 h-8 text-blue-400" />
@@ -307,7 +359,7 @@ export default function DownloadPage() {
                   </div>
                 </div>
 
-                <div className="bg-blue-500/5 rounded-xl p-4 mb-6 flex-grow">
+                <div className="bg-blue-500/5 rounded-xl p-4 mb-6">
                   <div className="flex items-start space-x-3">
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
@@ -320,7 +372,7 @@ export default function DownloadPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled
-                  className="w-full py-3 px-6 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 transition-all duration-300 opacity-50 cursor-not-allowed mt-auto"
+                  className="w-full py-3 px-6 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 transition-all duration-300 opacity-50 cursor-not-allowed"
                 >
                   Not Available
                 </motion.button>
