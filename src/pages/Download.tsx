@@ -6,11 +6,9 @@ import {
   Apple,
   Monitor,
   CheckCircle,
-  DownloadCloud,
-  User,
-  Globe
+  DownloadCloud
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface ApkLinks {
   [key: string]: string;
@@ -85,22 +83,6 @@ export default function DownloadPage() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState('64');
   const [isVNG, setIsVNG] = useState<boolean | null>(null);
-  const [showModal, setShowModal] = useState(true);
-
-  // When component mounts, check localStorage for modal dismissal timestamp and selection.
-  useEffect(() => {
-    const lastSelectionTime = localStorage.getItem('nebulaModalLastSelection');
-    const storedIsVNG = localStorage.getItem('nebulaIsVNG');
-    if (lastSelectionTime && storedIsVNG !== null) {
-      const timeDiff = Date.now() - parseInt(lastSelectionTime);
-      if (timeDiff < 3600000) { // 1 hour in milliseconds
-        const isVietnam = storedIsVNG === 'true';
-        setIsVNG(isVietnam);
-        setSelectedVersion(isVietnam ? 'vng-64' : '64');
-        setShowModal(false);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     fetch(
@@ -111,20 +93,26 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  // Save selection and timestamp so modal won't show for an hour.
-  const handleLocationSelect = (fromVietnam: boolean) => {
-    setIsVNG(fromVietnam);
-    setSelectedVersion(fromVietnam ? 'vng-64' : '64');
-    setShowModal(false);
-    localStorage.setItem('nebulaModalLastSelection', Date.now().toString());
-    localStorage.setItem('nebulaIsVNG', fromVietnam.toString());
-  };
+  // 1) Detect Vietnam IP
+  useEffect(() => {
+    fetch('https://ipwho.is/')
+      .then((res) => res.json())
+      .then((data: { country_code: string }) => {
+        const v = data.country_code === 'VN';
+        setIsVNG(v);
+        if (v) setSelectedVersion('vng-64');
+      })
+      .catch(() => {
+        setIsVNG(false);
+      });
+  }, []);
 
   const handleDownload = () => {
     if (!jsonData) return;
 
     let link: string | undefined;
     if (selectedVersion.startsWith('vng-')) {
+      // "vng-64" → key "64"
       const bit = selectedVersion.split('-')[1];
       link = jsonData.ApkLink.vng[bit];
     } else {
@@ -138,92 +126,16 @@ export default function DownloadPage() {
     }
   };
 
-  // If isVNG is null and modal has been closed, don't display anything.
-  if (isVNG === null && showModal === false) return null;
+  if (isVNG === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        Checking your location…
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="relative max-w-lg w-full mx-4"
-            >
-              <div className="bg-gradient-to-b from-blue-950/50 to-black/50 border border-blue-500/20 rounded-2xl p-8 backdrop-blur-xl">
-                <motion.div
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="flex justify-center mb-6"
-                >
-                  <div className="bg-blue-500/10 p-4 rounded-full">
-                    <User className="w-8 h-8 text-blue-400" />
-                  </div>
-                </motion.div>
-
-                <motion.h2
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-2xl font-bold text-white text-center mb-3"
-                >
-                  Is Your Account Set to Vietnam?
-                </motion.h2>
-
-                <motion.p
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-blue-200 text-center mb-8"
-                >
-                  This helps us provide you with the correct APK version
-                </motion.p>
-
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleLocationSelect(true)}
-                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
-                  >
-                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
-                      <CheckCircle className="w-5 h-5 text-blue-400" />
-                      <span className="text-white font-medium">Yes</span>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleLocationSelect(false)}
-                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
-                  >
-                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
-                      <Globe className="w-5 h-5 text-blue-400" />
-                      <span className="text-white font-medium">No</span>
-                    </div>
-                  </motion.button>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -238,6 +150,7 @@ export default function DownloadPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -253,6 +166,7 @@ export default function DownloadPage() {
           <p className="text-blue-200 text-lg">Choose your platform and start executing</p>
         </motion.div>
 
+        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -308,6 +222,7 @@ export default function DownloadPage() {
             </div>
           </motion.div>
 
+          {/* iOS Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -351,6 +266,7 @@ export default function DownloadPage() {
             </div>
           </motion.div>
 
+          {/* Windows Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
