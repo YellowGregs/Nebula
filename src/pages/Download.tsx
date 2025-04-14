@@ -6,9 +6,11 @@ import {
   Apple,
   Monitor,
   CheckCircle,
-  DownloadCloud
+  DownloadCloud,
+  User,
+  Globe
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ApkLinks {
   [key: string]: string;
@@ -94,7 +96,6 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  // Handler for user location selection
   const handleLocationSelect = (fromVietnam: boolean) => {
     setIsVNG(fromVietnam);
     setSelectedVersion(fromVietnam ? 'vng-64' : '64');
@@ -106,7 +107,6 @@ export default function DownloadPage() {
 
     let link: string | undefined;
     if (selectedVersion.startsWith('vng-')) {
-      // "vng-64" → key "64"
       const bit = selectedVersion.split('-')[1];
       link = jsonData.ApkLink.vng[bit];
     } else {
@@ -120,35 +120,90 @@ export default function DownloadPage() {
     }
   };
 
-  // Until the user selects their location, do not render the main UI.
   if (isVNG === null && showModal === false) return null;
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-          <div className="bg-blue-950 border border-blue-500/20 rounded-2xl p-8 max-w-sm w-full text-center text-white shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Is Your Account Set to Vietnam?</h2>
-            <p className="text-blue-200 mb-6">
-              This helps us show you the correct APK version.
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => handleLocationSelect(true)}
-                className="px-6 py-2 bg-blue-600 rounded-xl text-white hover:bg-blue-700 transition-all"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => handleLocationSelect(false)}
-                className="px-6 py-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-xl hover:bg-blue-500/30 transition-all"
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative max-w-lg w-full mx-4"
+            >
+              <div className="bg-gradient-to-b from-blue-950/50 to-black/50 border border-blue-500/20 rounded-2xl p-8 backdrop-blur-xl">
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex justify-center mb-6"
+                >
+                  <div className="bg-blue-500/10 p-4 rounded-full">
+                    <User className="w-8 h-8 text-blue-400" />
+                  </div>
+                </motion.div>
+
+                <motion.h2
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold text-white text-center mb-3"
+                >
+                  Is Your Account Set to Vietnam?
+                </motion.h2>
+
+                <motion.p
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-blue-200 text-center mb-8"
+                >
+                  This helps us provide you with the correct APK version
+                </motion.p>
+
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleLocationSelect(true)}
+                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
+                  >
+                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
+                      <CheckCircle className="w-5 h-5 text-blue-400" />
+                      <span className="text-white font-medium">Yes</span>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleLocationSelect(false)}
+                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
+                  >
+                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
+                      <Globe className="w-5 h-5 text-blue-400" />
+                      <span className="text-white font-medium">No</span>
+                    </div>
+                  </motion.button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -176,12 +231,9 @@ export default function DownloadPage() {
             </div>
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Download Nebula</h1>
-          <p className="text-blue-200 text-lg">
-            Choose your platform and start executing
-          </p>
+          <p className="text-blue-200 text-lg">Choose your platform and start executing</p>
         </motion.div>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -237,7 +289,6 @@ export default function DownloadPage() {
             </div>
           </motion.div>
 
-          {/* iOS Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -281,7 +332,6 @@ export default function DownloadPage() {
             </div>
           </motion.div>
 
-          {/* Windows Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
