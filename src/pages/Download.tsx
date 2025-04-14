@@ -6,15 +6,9 @@ import {
   Apple,
   Monitor,
   CheckCircle,
-  DownloadCloud,
-  User,
-  Globe
+  DownloadCloud
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-
-interface ApkLinks {
-  [key: string]: string;
-}
+import { motion } from 'framer-motion';
 
 interface VngLinks {
   [key: string]: string;
@@ -31,11 +25,13 @@ interface JsonData {
 const VersionSelect = ({
   selectedVersion,
   onChange,
-  isVNG
+  isVNG,
+  vngLinks
 }: {
   selectedVersion: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   isVNG: boolean;
+  vngLinks: VngLinks;
 }) => (
   <div className="relative inline-block">
     <select
@@ -50,16 +46,14 @@ const VersionSelect = ({
       {isVNG ? (
         <>
           <option value="vng-64">VNG 64‑bit</option>
-          <option value="vng-32" disabled>
-            VNG 32‑bit (W.I.P)
+          <option value="vng-32" disabled={!vngLinks['32']}>
+            VNG 32‑bit
           </option>
         </>
       ) : (
         <>
           <option value="64">64‑bit</option>
-          <option value="32" disabled>
-            32‑bit (W.I.P)
-          </option>
+          <option value="32">32‑bit</option>
         </>
       )}
     </select>
@@ -85,7 +79,6 @@ export default function DownloadPage() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState('64');
   const [isVNG, setIsVNG] = useState<boolean | null>(null);
-  const [showModal, setShowModal] = useState(true);
 
   useEffect(() => {
     fetch(
@@ -96,15 +89,42 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  const handleLocationSelect = (fromVietnam: boolean) => {
-    setIsVNG(fromVietnam);
-    setSelectedVersion(fromVietnam ? 'vng-64' : '64');
-    setShowModal(false);
-  };
+  // Improved VNG detection(hope this works :sob:)
+  useEffect(() => {
+    const detect = async () => {
+      // primary
+      try {
+        const res1 = await fetch('https://ipwho.is/');
+        const d1 = await res1.json();
+        if (d1.country_code === 'VN' || d1.calling_code === '84') {
+          setIsVNG(true);
+          return;
+        }
+      } catch {
+        // Ignored
+      }
+      // fallback
+      try {
+        const res2 = await fetch('https://ipapi.co/json/');
+        const d2 = await res2.json();
+        if (d2.country === 'VN' || d2.country_calling_code === '+84') {
+          setIsVNG(true);
+          return;
+        }
+      } catch {
+        // Ignored
+      }
+      setIsVNG(false);
+    };
+    detect();
+  }, []);
+
+  useEffect(() => {
+    if (isVNG) setSelectedVersion('vng-64');
+  }, [isVNG]);
 
   const handleDownload = () => {
     if (!jsonData) return;
-
     let link: string | undefined;
     if (selectedVersion.startsWith('vng-')) {
       const bit = selectedVersion.split('-')[1];
@@ -112,99 +132,20 @@ export default function DownloadPage() {
     } else {
       link = jsonData.ApkLink[selectedVersion as '32' | '64'];
     }
-
-    if (link) {
-      window.open(link, '_blank');
-    } else {
-      alert('Download link not available for this version.');
-    }
+    if (link) window.open(link, '_blank');
+    else alert('Download link not available for this version.');
   };
 
-  if (isVNG === null && showModal === false) return null;
+  if (isVNG === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        Checking your location…
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="relative max-w-lg w-full mx-4"
-            >
-              <div className="bg-gradient-to-b from-blue-950/50 to-black/50 border border-blue-500/20 rounded-2xl p-8 backdrop-blur-xl">
-                <motion.div
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="flex justify-center mb-6"
-                >
-                  <div className="bg-blue-500/10 p-4 rounded-full">
-                    <User className="w-8 h-8 text-blue-400" />
-                  </div>
-                </motion.div>
-
-                <motion.h2
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-2xl font-bold text-white text-center mb-3"
-                >
-                  Is Your Account Set to Vietnam?
-                </motion.h2>
-
-                <motion.p
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-blue-200 text-center mb-8"
-                >
-                  This helps us provide you with the correct APK version
-                </motion.p>
-
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleLocationSelect(true)}
-                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
-                  >
-                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
-                      <CheckCircle className="w-5 h-5 text-blue-400" />
-                      <span className="text-white font-medium">Yes</span>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleLocationSelect(false)}
-                    className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/20 p-px"
-                  >
-                    <div className="relative flex items-center justify-center space-x-2 bg-gradient-to-br from-blue-950/50 to-black/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-transparent">
-                      <Globe className="w-5 h-5 text-blue-400" />
-                      <span className="text-white font-medium">No</span>
-                    </div>
-                  </motion.button>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -250,10 +191,19 @@ export default function DownloadPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-semibold text-white">Android</h2>
-                    <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-green-500/10 text-green-400">
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Working
-                    </span>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/10 text-green-400 border border-green-500/30">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Working
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          isVNG ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'
+                        }`}
+                      >
+                        {isVNG ? 'VNG Build' : 'Global Build'}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -262,12 +212,13 @@ export default function DownloadPage() {
                     <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                     <p className="text-blue-200 text-sm">
                       {isVNG
-                        ? 'Select your VNG build.'
-                        : '32‑bit version is in development. Use 64‑bit if supported.'}
+                        ? 'Select your Roblox VNG APK.'
+                        : 'Select your Roblox Version APK.'}
                     </p>
                   </div>
                 </div>
 
+                {/* Download & Selector */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 mt-auto">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -278,17 +229,18 @@ export default function DownloadPage() {
                     <Download className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
                     Download
                   </motion.button>
-
                   <VersionSelect
                     selectedVersion={selectedVersion}
                     onChange={(e) => setSelectedVersion(e.target.value)}
                     isVNG={!!isVNG}
+                    vngLinks={jsonData?.ApkLink.vng || {}}
                   />
                 </div>
               </div>
             </div>
           </motion.div>
 
+          {/* iOS Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -332,6 +284,7 @@ export default function DownloadPage() {
             </div>
           </motion.div>
 
+          {/* Windows Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
