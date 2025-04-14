@@ -40,41 +40,23 @@ export default function Navbar() {
   }, []);
 
   const isActive = (path: string) => location.pathname === path;
+  const shouldHaveSolidBg = isMenuOpen;
 
   const mobileMenuVariants = {
     closed: {
-      clipPath: "inset(0 0 100% 0)",
-      transition: {
-        type: "tween",
-        duration: 0.2,
-        ease: [0.4, 0, 0.2, 1],
-      }
-    },
-    open: {
-      clipPath: "inset(0 0 0 0)",
-      transition: {
-        type: "tween",
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
-        staggerChildren: 0.05,
-        delayChildren: 0.1
-      }
-    }
-  };
-
-  const menuItemVariants = {
-    closed: {
       opacity: 0,
-      y: 10,
+      height: 0,
       transition: {
-        duration: 0.2
+        duration: 0.3,
+        ease: "easeInOut"
       }
     },
     open: {
       opacity: 1,
-      y: 0,
+      height: "auto",
       transition: {
-        duration: 0.2
+        duration: 0.3,
+        ease: "easeInOut"
       }
     }
   };
@@ -83,33 +65,38 @@ export default function Navbar() {
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50 px-3"
       style={{ paddingTop: navPadding, paddingBottom: navPadding }}
     >
       <motion.nav 
         style={{ 
-          backgroundColor: isMenuOpen ? "rgba(0, 0, 0, 0.8)" : navBackground,
           scale: navScale,
+          backgroundColor: shouldHaveSolidBg ? "rgba(0, 0, 0, 0.8)" : navBackground,
         }}
-        className="max-w-7xl mx-auto rounded-2xl backdrop-blur-sm transition-all duration-300"
+        className="max-w-7xl mx-auto transition-all duration-300 rounded-2xl backdrop-blur-xl"
       >
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-3">
+            <Link to="/" className="flex items-center space-x-3 group">
               <motion.img
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
+                whileHover={{ scale: 1.1, rotate: 360 }}
+                transition={{ duration: 0.5 }}
                 src="https://files.catbox.moe/gl077v.png"
                 alt="Nebula"
                 className="w-10 h-10"
               />
-              <span className="text-white font-bold text-xl tracking-wider">
+              <motion.span 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-white font-bold text-xl tracking-wider"
+              >
                 Nebula
-              </span>
+              </motion.span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop */}
             <div className="hidden md:flex items-center space-x-2">
               <div className="flex items-center space-x-4">
                 <NavLink to="/" isActive={isActive('/')} icon={Home}>
@@ -135,7 +122,7 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 px-5 py-2 rounded-lg bg-[#7289da]/10 hover:bg-[#7289da]/20 
-                text-[#7289da] border border-[#7289da]/30 transition-all duration-200"
+                text-[#7289da] border border-[#7289da]/30 transition-all duration-300"
               >
                 <FaDiscord className="w-4 h-4" />
                 <span>Discord</span>
@@ -174,41 +161,46 @@ export default function Navbar() {
               >
                 <motion.div 
                   className="py-3 space-y-1 border-t border-blue-500/10"
+                  variants={{
+                    open: {
+                      transition: {
+                        staggerChildren: 0.07,
+                        delayChildren: 0.1
+                      }
+                    }
+                  }}
                 >
-                  <motion.div variants={menuItemVariants}>
-                    <MobileNavLink to="/" isActive={isActive('/')} icon={Home} onClick={() => setIsMenuOpen(false)}>
-                      Home
-                    </MobileNavLink>
-                  </motion.div>
-                  <motion.div variants={menuItemVariants}>
-                    <MobileNavLink to="/scripts" isActive={isActive('/scripts')} icon={Code2} onClick={() => setIsMenuOpen(false)}>
-                      Scripts
-                    </MobileNavLink>
-                  </motion.div>
-                  <motion.div variants={menuItemVariants}>
-                    <MobileNavLink to="/download" isActive={isActive('/download')} icon={Download} onClick={() => setIsMenuOpen(false)}>
-                      Download
-                    </MobileNavLink>
-                  </motion.div>
-                   <motion.div variants={menuItemVariants}>
-                    <MobileNavLink to="/GetKey" isActive={isActive('/GetKey')} icon={Key} onClick={() => setIsMenuOpen(false)}>
-                      Get Key
-                    </MobileNavLink>
-                  </motion.div>
+                  <MobileNavLink to="/" isActive={isActive('/')} icon={Home} onClick={() => setIsMenuOpen(false)}>
+                    Home
+                  </MobileNavLink>
+                  <MobileNavLink to="/scripts" isActive={isActive('/scripts')} icon={Code2} onClick={() => setIsMenuOpen(false)}>
+                    Scripts
+                  </MobileNavLink>
+                  <MobileNavLink to="/download" isActive={isActive('/download')} icon={Download} onClick={() => setIsMenuOpen(false)}>
+                    Download
+                  </MobileNavLink>
+                  <MobileNavLink to="/GetKey" isActive={isActive('/GetKey')} icon={Key} onClick={() => setIsMenuOpen(false)}>
+                    Get Key
+                  </MobileNavLink>
+                  
 
-                  <motion.div variants={menuItemVariants}>
-                    <a
-                      href={discordLink || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 px-4 py-3 rounded-lg bg-[#7289da]/10 hover:bg-[#7289da]/20 
-                      text-[#7289da] transition-all duration-200 mx-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <FaDiscord className="w-5 h-5" />
-                      <span>Discord</span>
-                    </a>
-                  </motion.div>
+                  <motion.a
+                    variants={{
+                      closed: { opacity: 0, x: -20 },
+                      open: { opacity: 1, x: 0 }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    href={discordLink || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-2 px-4 py-3 rounded-lg bg-[#7289da]/10 hover:bg-[#7289da]/20 
+                    text-[#7289da] transition-all duration-200 mx-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <FaDiscord className="w-5 h-5" />
+                    <span>Discord</span>
+                  </motion.a>
                 </motion.div>
               </motion.div>
             )}
@@ -230,7 +222,7 @@ const NavLink = ({ to, isActive, icon: Icon, children }: NavLinkProps) => (
   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
     <Link
       to={to}
-      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
         isActive 
           ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' 
           : 'text-zinc-400 hover:text-white hover:bg-white/5'
@@ -247,16 +239,25 @@ interface MobileNavLinkProps extends NavLinkProps {
 }
 
 const MobileNavLink = ({ to, isActive, icon: Icon, children, onClick }: MobileNavLinkProps) => (
-  <Link
-    to={to}
-    className={`flex items-center space-x-2 px-4 py-3 mx-2 rounded-lg transition-all duration-200 ${
-      isActive 
-        ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' 
-        : 'text-zinc-400 hover:text-white hover:bg-white/5'
-    }`}
-    onClick={onClick}
+  <motion.div
+    variants={{
+      closed: { opacity: 0, x: -20 },
+      open: { opacity: 1, x: 0 }
+    }}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
   >
-    <Icon className="w-4 h-4" />
-    <span>{children}</span>
-  </Link>
+    <Link
+      to={to}
+      className={`flex items-center space-x-2 px-4 py-3 mx-2 rounded-lg transition-all duration-200 ${
+        isActive 
+          ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' 
+          : 'text-zinc-400 hover:text-white hover:bg-white/5'
+      }`}
+      onClick={onClick}
+    >
+      <Icon className="w-4 h-4" />
+      <span>{children}</span>
+    </Link>
+  </motion.div>
 );

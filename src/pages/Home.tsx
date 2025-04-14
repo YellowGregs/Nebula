@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     question: "Which Android version do I need?",
-    answer: "We recommend using Android 64-bit, but if you have a bad phone than I would recommend 32-bit."
+    answer: "We recommend using Android 64-bit, Since 32-bit version is currently in development."
   }
 ];
 

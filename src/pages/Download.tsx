@@ -218,6 +218,7 @@ export default function DownloadPage() {
                   </div>
                 </div>
 
+                {/* Download & Selector */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 mt-auto">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
