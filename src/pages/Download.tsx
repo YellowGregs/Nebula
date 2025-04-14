@@ -49,14 +49,14 @@ const VersionSelect = ({
         <>
           <option value="vng-64">VNG 64‑bit</option>
           <option value="vng-32" disabled>
-            VNG 32‑bit (W.I.P)
+            VNG 32‑bit
           </option>
         </>
       ) : (
         <>
           <option value="64">64‑bit</option>
           <option value="32" disabled>
-            32‑bit (W.I.P)
+            32‑bit
           </option>
         </>
       )}
