@@ -93,7 +93,7 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  // 2) Detect Vietnam IP
+  // 1) Detect Vietnam IP
   useEffect(() => {
     fetch('https://ipwho.is/')
       .then((res) => res.json())
