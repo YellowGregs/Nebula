@@ -128,7 +128,7 @@ export default function DownloadPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
           <div className="bg-blue-950 border border-blue-500/20 rounded-2xl p-8 max-w-sm w-full text-center text-white shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Are you from Vietnam?</h2>
+            <h2 className="text-2xl font-semibold mb-4">Is Your Account Set to Vietnam?</h2>
             <p className="text-blue-200 mb-6">
               This helps us show you the correct APK version.
             </p>
