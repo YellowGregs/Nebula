@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Copy, CheckCircle, RefreshCw, Search, ExternalLink, Key, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Copy, CheckCircle, RefreshCw, Search, ExternalLink, Key, ChevronRight, ChevronLeft, Code2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { FaDiscord, FaLightbulb, FaSearch } from 'react-icons/fa';
 import axios from 'axios';
@@ -169,7 +169,22 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
 
       <div className="relative pt-32 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-4 mb-8 justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-blue-500/10 p-4 rounded-full">
+                <Code2 className="w-10 h-10 text-blue-400" />
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-4">Scripts</h1>
+            <p className="text-blue-200 text-lg">Find and execute your favorite scripts</p>
+          </motion.div>
+
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-8 justify-center">
             <button
               onClick={() => setActiveTab('recommendations')}
               className={`px-6 py-2 rounded-lg transition-all duration-300 ${
@@ -195,7 +210,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
           </div>
 
           {activeTab === 'recommendations' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendH.map((hub, index) => (
                 <motion.div
                   key={index}
@@ -204,7 +219,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-lg overflow-hidden hover:border-blue-500/40 transition-all duration-300"
                 >
-                  {/* Hub content */}
                   <div className="p-6">
                     <div className="flex items-center space-x-4 mb-4">
                       <img
@@ -263,7 +277,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
 
           {activeTab === 'search' && (
             <div>
-              <div className="max-w-2xl mx-auto mb-8 flex space-x-4 items-center">
+              <div className="max-w-2xl mx-auto mb-8 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
                   <input
                     type="text"
@@ -306,7 +320,6 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-blue-500/20 rounded-lg overflow-hidden flex flex-col h-full"
                   >
-                    {/* Script card content */}
                     <div className="p-6">
                       <div className="w-full h-40 relative mb-4">
                         {script.game ? (
@@ -338,7 +351,8 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                             rel="noopener noreferrer"
                             className="block hover:text-blue-400 transition-colors"
                           >
-                            <h3 className="text-lg font-semibold text-white mb-1 hover:underline">
+                            <h3 className="text-lg font-semibold text-white mb-1 hover:underline line-clamp-2">
+                              
                               {script.title}
                             </h3>
                           </a>
@@ -347,7 +361,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                               href={`https://www.roblox.com/games/${script.game.gameId}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-400 text-sm hover:underline"
+                              className="text-blue-400 text-sm hover:underline line-clamp-1"
                             >
                               {script.game.name}
                             </a>
@@ -421,7 +435,7 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc61
                     <ChevronLeft className="w-5 h-5 inline" /> Prev
                   </button>
                   <span className="text-zinc-400 bg-zinc-900/50 px-4 py-2 rounded-lg border border-zinc-800/50">
-                   {page} of {totalPages}
+                    {page} of {totalPages}
                   </span>
                   <button
                     disabled={page === totalPages}
