@@ -83,6 +83,7 @@ export default function DownloadPage() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState('64');
   const [isVNG, setIsVNG] = useState<boolean | null>(null);
+  const [showModal, setShowModal] = useState(true);
 
   useEffect(() => {
     fetch(
@@ -93,19 +94,12 @@ export default function DownloadPage() {
       .catch((err) => console.error('Error fetching JSON:', err));
   }, []);
 
-  // 1) Detect Vietnam IP
-  useEffect(() => {
-    fetch('https://ipwho.is/')
-      .then((res) => res.json())
-      .then((data: { country_code: string }) => {
-        const v = data.country_code === 'VN';
-        setIsVNG(v);
-        if (v) setSelectedVersion('vng-64');
-      })
-      .catch(() => {
-        setIsVNG(false);
-      });
-  }, []);
+  // Handler for user location selection
+  const handleLocationSelect = (fromVietnam: boolean) => {
+    setIsVNG(fromVietnam);
+    setSelectedVersion(fromVietnam ? 'vng-64' : '64');
+    setShowModal(false);
+  };
 
   const handleDownload = () => {
     if (!jsonData) return;
@@ -126,16 +120,36 @@ export default function DownloadPage() {
     }
   };
 
-  if (isVNG === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        Checking your location…
-      </div>
-    );
-  }
+  // Until the user selects their location, do not render the main UI.
+  if (isVNG === null && showModal === false) return null;
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div className="bg-blue-950 border border-blue-500/20 rounded-2xl p-8 max-w-sm w-full text-center text-white shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4">Are you from Vietnam?</h2>
+            <p className="text-blue-200 mb-6">
+              This helps us show you the correct APK version.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => handleLocationSelect(true)}
+                className="px-6 py-2 bg-blue-600 rounded-xl text-white hover:bg-blue-700 transition-all"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => handleLocationSelect(false)}
+                className="px-6 py-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-xl hover:bg-blue-500/30 transition-all"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -150,7 +164,6 @@ export default function DownloadPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -163,7 +176,9 @@ export default function DownloadPage() {
             </div>
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Download Nebula</h1>
-          <p className="text-blue-200 text-lg">Choose your platform and start executing</p>
+          <p className="text-blue-200 text-lg">
+            Choose your platform and start executing
+          </p>
         </motion.div>
 
         {/* Cards */}
