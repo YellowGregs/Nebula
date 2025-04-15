@@ -8,6 +8,11 @@ import Scripts from './pages/Scripts';
 import Download from './pages/Download';
 import GetKey from "./pages/GetKey";
 
+
+import DiscontinueModal from "./components/DiscontinueModal";
+
+
+
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -35,6 +40,11 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+
+        
+        <DiscontinueModal />
+
+        
         <Navbar />
         <AnimatedRoutes />
         <Footer />
