@@ -145,7 +145,7 @@ export default function DownloadPage() {
                     <p className="text-blue-200 text-sm">
                       {selectedVersion === '32'
                         ? '32‑bit version is now available! Click Download to get the APK.'
-                        : 'Select your preferred architecture and click Download.'}
+                        : ''}
                     </p>
                   </div>
                 </div>
