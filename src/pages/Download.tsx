@@ -8,7 +8,8 @@ import {
   CheckCircle,
   DownloadCloud,
   AlertTriangle,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,14 +29,24 @@ const VersionSelect = ({
   selectedVersion,
   onChange,
   versions,
+  onVngSelect
 }: {
   selectedVersion: string;
   onChange: (version: string) => void;
   versions: { label: string; value: string; disabled?: boolean }[];
+  onVngSelect: () => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedLabel = versions.find(v => v.value === selectedVersion)?.label || '';
+
+  const handleVersionSelect = (version: string) => {
+    if (version.startsWith('vng-')) {
+      onVngSelect();
+    }
+    onChange(version);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -74,10 +85,7 @@ const VersionSelect = ({
                 <motion.button
                   key={version.value}
                   whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                  onClick={() => {
-                    onChange(version.value);
-                    setIsOpen(false);
-                  }}
+                  onClick={() => handleVersionSelect(version.value)}
                   disabled={version.disabled}
                   className={`w-full px-3 py-2 text-left rounded-lg transition-colors duration-200 ${
                     version.disabled 
@@ -94,10 +102,7 @@ const VersionSelect = ({
                 <motion.button
                   key={version.value}
                   whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                  onClick={() => {
-                    onChange(version.value);
-                    setIsOpen(false);
-                  }}
+                  onClick={() => handleVersionSelect(version.value)}
                   disabled={version.disabled}
                   className={`w-full px-3 py-2 text-left rounded-lg transition-colors duration-200 ${
                     version.disabled 
@@ -116,10 +121,98 @@ const VersionSelect = ({
   );
 };
 
+const VngWarningModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [countdown, setCountdown] = useState(5);
+  const [canClose, setCanClose] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (countdown === 0) {
+      setCanClose(true);
+    }
+  }, [isOpen, countdown]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setCountdown(5);
+      setCanClose(false);
+    }
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={canClose ? onClose : undefined}
+          />
+          
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative bg-gradient-to-br from-black to-blue-950/30 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 max-w-lg w-full shadow-2xl"
+          >
+            <div className="flex items-start space-x-4">
+              <div className="bg-red-500/10 p-3 rounded-xl">
+                <AlertTriangle className="w-6 h-6 text-red-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-white mb-4">⚠️ Important Warning</h3>
+                <div className="prose prose-invert">
+                  <p className="text-red-400 font-semibold mb-4">
+                    Using the VNG version outside of Vietnam can result in:
+                  </p>
+                  <ul className="text-zinc-300 space-y-2 mb-6 list-disc ml-4">
+                    <li>Your account being permanently locked to the Vietnam region</li>
+                    <li>Inability to access global servers</li>
+                    <li>Limited game features and functionality</li>
+                    <li>Potential account restrictions</li>
+                  </ul>
+                  <p className="text-zinc-300">
+                    Only proceed if you are physically located in Vietnam or specifically need the VNG version.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <motion.button
+              whileHover={canClose ? { scale: 1.02 } : {}}
+              whileTap={canClose ? { scale: 0.98 } : {}}
+              onClick={canClose ? onClose : undefined}
+              className={`w-full mt-6 px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2
+                ${canClose 
+                  ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer' 
+                  : 'bg-red-500/10 text-red-400 cursor-not-allowed'}`}
+            >
+              <span>I Understand {!canClose && `(${countdown}s)`}</span>
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function DownloadPage() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState('64');
   const [downloadAvailable, setDownloadAvailable] = useState(true);
+  const [showVngWarning, setShowVngWarning] = useState(false);
 
   useEffect(() => {
     fetch(
@@ -179,6 +272,11 @@ export default function DownloadPage() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-12">
+      <VngWarningModal 
+        isOpen={showVngWarning} 
+        onClose={() => setShowVngWarning(false)} 
+      />
+
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
@@ -271,6 +369,7 @@ export default function DownloadPage() {
                     selectedVersion={selectedVersion}
                     onChange={handleVersionChange}
                     versions={versions}
+                    onVngSelect={() => setShowVngWarning(true)}
                   />
 
                   <motion.button
