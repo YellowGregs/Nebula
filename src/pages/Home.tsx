@@ -104,7 +104,6 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-blue-400/30 rounded-full" />
       </div>
       
-      {/* Floating Tutorial Button */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,10 +120,8 @@ export default function Home() {
       </motion.button>
       
       <main className="relative flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center max-w-4xl mx-auto relative">
-            {/* Animated Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -236,7 +233,6 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Tutorial Section */}
         <motion.div 
           ref={tutorialRef}
           initial={{ opacity: 0, y: 20 }}
