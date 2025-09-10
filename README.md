@@ -1,7 +1,7 @@
 # Nebula
 A Roblox Executor Website built with **Vite**, **React**, and **TypeScript**.
 
-## Project Status
+## ⚠️ Project Status
 This project has been **discontinued**.  
 Since AhmadV99 discontinued Nebula, we are releasing the website source code.
 
