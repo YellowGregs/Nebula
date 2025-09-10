@@ -5,6 +5,12 @@ A Roblox Executor Website built with **Vite**, **React**, and **TypeScript**.
 This project has been **discontinued**.  
 Since AhmadV99 discontinued Nebula, we are releasing the website source code.
 
+----
+
+Official Links:
+- https://nebula-rblx.vercel.app/
+- https://nebula-executor.xyz/
+
 ## Contributors
 - **`AhmadV99`**
 - **`YellowGreg`** — Completed the website and hosted it.  
